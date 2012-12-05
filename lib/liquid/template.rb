@@ -16,6 +16,7 @@ module Liquid
   class Template
     attr_accessor :root
     @@file_system = BlankFileSystem.new
+    @@extension = "liquid"
 
     class << self
       def file_system
@@ -24,6 +25,14 @@ module Liquid
 
       def file_system=(obj)
         @@file_system = obj
+      end
+
+      def extension
+        @@extension
+      end
+
+      def extension=(ext)
+        @@extension = ext
       end
 
       def register_tag(name, klass)
@@ -88,7 +97,7 @@ module Liquid
     #
     def render(*args)
       return '' if @root.nil?
-      
+
       context = case args.first
       when Liquid::Context
         args.shift
