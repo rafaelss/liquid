@@ -43,6 +43,17 @@ class BlockTest < Test::Unit::TestCase
     assert_equal 3, template.root.nodelist.size
   end
 
+  def test_with_block_with_custom_block_delimiter
+    Liquid::Block.delimiter_prefix = "/"
+    Liquid::Template.register_tag("testtag", Block)
+
+    assert_nothing_thrown do
+      template = Liquid::Template.parse( "{% testtag %} {% /testtag %}")
+    end
+
+    Liquid::Block.delimiter_prefix = nil
+  end
+
   def test_with_custom_tag
     Liquid::Template.register_tag("testtag", Block)
 

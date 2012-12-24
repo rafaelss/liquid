@@ -3,7 +3,7 @@ module Liquid
   class Block < Tag
     IsTag             = /^#{TagStart}/o
     IsVariable        = /^#{VariableStart}/o
-    FullToken         = /^#{TagStart}\s*(\w+)\s*(.*)?#{TagEnd}$/o
+    FullToken         = /^#{TagStart}\s*([\w\/]+)\s*(.*)?#{TagEnd}$/o
     ContentOfVariable = /^#{VariableStart}(.*)#{VariableEnd}$/o
 
     def parse(tokens)
@@ -64,7 +64,7 @@ module Liquid
     end
 
     def block_delimiter
-      "end#{block_name}"
+      "#{Block.delimiter_prefix}#{block_name}"
     end
 
     def block_name
@@ -82,6 +82,14 @@ module Liquid
       render_all(@nodelist, context)
     end
 
+    def self.delimiter_prefix
+      @delimiter_prefix || "end"
+    end
+
+    def self.delimiter_prefix=(delimiter)
+      @delimiter_prefix = delimiter
+    end
+
     protected
 
     def assert_missing_delimitation!
@@ -96,7 +104,7 @@ module Liquid
 
         begin
           # If we get an Interrupt that means the block must stop processing. An
-          # Interrupt is any command that stops block execution such as {% break %} 
+          # Interrupt is any command that stops block execution such as {% break %}
           # or {% continue %}
           if token.is_a? Continue or token.is_a? Break
             context.push_interrupt(token.interrupt)
